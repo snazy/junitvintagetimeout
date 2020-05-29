@@ -38,7 +38,7 @@ java {
 }
 
 group = "org.caffinitas.junitvintagetimeout"
-version = "0.1.1"
+version = "0.1.2-SNAPSHOT"
 val readableName = "JUnit vintage-engine with timeouts"
 description = "Adds a per-test timeout to the JUnit 5 vintage-engine"
 
