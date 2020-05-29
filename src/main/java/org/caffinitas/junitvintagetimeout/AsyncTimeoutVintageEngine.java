@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongSupplier;
 
+import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
@@ -45,7 +46,7 @@ public class AsyncTimeoutVintageEngine implements TestEngine
     static final long FUTURE_GET_TIMEOUT_MILLIS = 100L;
 
     private final TestEngine delegate;
-    private final int timeoutSeconds;
+    private int timeoutSeconds;
 
     // gets a mocked time-source for testing, delegates to System.nanoTime() in prod
     private static LongSupplier nanoTimeSource;
@@ -108,6 +109,10 @@ public class AsyncTimeoutVintageEngine implements TestEngine
     @Override
     public void execute(ExecutionRequest request)
     {
+        ConfigurationParameters cfg = request.getConfigurationParameters();
+        if (cfg != null)
+            // unit tests don't provide a ConfigurationParameters instance
+            timeoutSeconds = cfg.get("junit.vintage.execution.timeout.seconds", Integer::parseInt).orElse(timeoutSeconds);
         if (timeoutSeconds <= 0)
         {
             delegate.execute(request);
